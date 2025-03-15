@@ -1,0 +1,140 @@
+1)correlation bete entre grade 
+=> run simple_cor_grade_mean_pro.py et simple_cor_grade_mean_public.py
+on voit que pour votes public ca a impact (cf multiplier et p values qu il faut readapt)
+on voit que score des critiques matter moins (low p value et scatter plot), c'est un peu expect car 
+j imagine que les films font plus d'argent grace aux gens random qu aux citiques pros 
+
+2)clustering => les movies clivant sont rentables
+run variance_distrib.py We can see that successful movies both low budget and high budget have 2 clusters (one with low variance and one with higher)
+so do clustering (run clustering_grade_analysis.py)
+*** pour lwo budget t obtiens ces 2 clusters : ***
+   mean_rating  std_rating  harsh_reviews  very_good_reviews   skewness  kurtosis
+0     3.165474    1.973124       0.258185           0.402045   -0.089644  3.530440
+1     3.584039    0.955159       0.101527           0.515741   -0.731173  0.846286
+
+on voit clairement que clsuter 0 correspond aux movies clivant avec high std et kurtosis high qui justifie que heavy tails in reviews
+cluser est les movies generallement bien qui font pas de vagues (generallement bien avec skewness negative)
+
+pour 1, average multiplier est 53384.134713, std 83166.034181
+pour 0, average multiplier est 16846.674614, 607141.653164    
+
+=> peut voir que movie clivant est en moyenne moins rentable mais plus de variance => meilleur upside potentiel (ptet peux rajouter max multiplier de categorie pr confirmer)
+
+*** pour high budget :***
+Cluster Centers:
+   mean_rating  std_rating  harsh_reviews  very_good_reviews  skewness  kurtosis
+0     3.248879    1.857537       0.200936           0.433505 -0.039806  2.960257
+1     3.569211    0.956237       0.106838           0.510597 -0.757744  0.852278
+
+pour 1, average multiplier est 5.673829, std est 2.471978
+pour 0, average multiplier est 4.316574 std est 3.928889
+
+=> pour high budget, les conclusions sont similaires même si c'est moins tranché (ie groupes moins extremes) et diff de multiplier same ce qui
+reste sur l idee que high budget est en general moins flippy, as expected 
+
+3)maintenant on se penche sur l'aspect temporel des reviews
+3)1)grade_evolution.py
+***high budget : ***
+Comparison of Multipliers Based on Initial Ratings:
+  Rating Bin  High Initial Mean Multiplier  Low Initial Mean Multiplier   p-value
+0      2-2.5                      3.012293                     3.109231  0.798609
+1      2.5-3                      3.355397                     2.555452  0.065286
+2      3-3.5                      3.777333                     3.217540  0.096428
+3      3.5-4                      3.599637                     3.176279  0.359646
+4      4-4.5                      3.991631                     2.548488  0.059101
+
+g cluster par bin comme ca pour que meme si higher multiplier au debut, reste globalement meme mean => try to remove the bias here (sert a rien
+de comparer des films qui ont pas le mm average rating)
+
+on peut voir que a part 1 outlier, les films qui buzzent au debut marchent mieux (meme si pas big p values) (mkes sens car c'est surement 
+au debut que big movies font leur thune car les gens vont au synema et tt)
+
+***low budget : ***
+Comparison of Multipliers Based on Initial Ratings:
+  Rating Bin  High Initial Mean Multiplier  Low Initial Mean Multiplier   p-value
+0      2-2.5                     12.429773                     9.469861  0.750635
+1      2.5-3                      7.864514                     9.207515  0.326206
+2      3-3.5                      12.001271                    5.280964  0.094224
+3      3.5-4                      8.551002                    21.648793  0.484557
+4      4-4.5                      8.813192                     3.198885  0.649013
+
+=> pour eux, moins de diff (normal car j'imagine que low budget vont pas forcement big au cinema et ont psa besoin de cash in variance_distrib
+peuvent etre redecouverts )
+
+3)2)grade_evol_slope_fulctu.py
+***High_budget :***
+Comparison of Multipliers Based on Overall Rating Trends (Slope):
+High Slope Mean Multiplier: 2.7534339965475074
+Low Slope Mean Multiplier: 3.429144872120382
+p-value: 0.021140356403976667
+
+Comparison of Multipliers Based on Rating Trend Fluctuation:
+High Fluctuation Mean Multiplier: 3.1814788505968523
+Low Fluctuation Mean Multiplier: 3.332750279041035
+p-value: 0.6457357239423591
+
+ca confirme 3)1) en mode pour high budget movies, c mieux d avoir une low slope (ie higher ratings at begining)
+pour fulctuation je voulais voir si fluctuation dans le temps (genre avoir plusieurs distincitve trends) joue mais pas vrmt 
+
+***Low budget : ***
+Comparison of Multipliers Based on Overall Rating Trends (Slope):
+High Slope Mean Multiplier: 61.887941392244
+Low Slope Mean Multiplier: 25.006644148874052
+p-value: 0.3192347102075948
+
+Comparison of Multipliers Based on Rating Trend Fluctuation:
+High Fluctuation Mean Multiplier: 22.094467346793074
+Low Fluctuation Mean Multiplier: 45.4258382405
+p-value: 0.31854468916455153
+
+pour les lwo, les p values sont trop hautes pour qu on voit qqch de significatif (donc valide conclusions de 3)2))
+
+
+4)sentiment analysis on reviews
+see emotion_reviews_analysis.py
+
+5)sequels 
+run sequels_analysis.py
+
+**"high budget***:
+Standalone vs Franchise Multiplier Comparison:
+Standalone Mean Multiplier: 2.0597804597636333
+Franchise Mean Multiplier: 3.9789136563666267
+p-value: 3.461536820457589e-67
+et box plot => generlly franchise have better multiplier than standalone. 
+
+
+LIMITS :THERE COULD BE A BIAS In that by definition maybe they did a franchise because the first one had good multipler 
+indeed : Average First Movie Multiplier: 5.099027999113905 vs Average Standalone Movie Multiplier: 2.0597804597636333 (p-value: 6.514075746976887e-66)
+
+donc truc plus interessant a regarder mybe c'est correlation entre previous movie of a sequel and next one (comme ca si tu vois que t as un bon multiplier,
+est ce que ca vaut le coup de faire next ?)
+
+Correlation Between Previous Movies' Average Multiplier and Next Movie Multiplier:
+Correlation Coefficient: 0.5169283620691837
+p-value: 3.595683143178932e-22
+-> worth it de continuer 
+
+plot distrib a la fin montre que tire la ficelle jusqua u bout car plutot a gauche de 0
+
+
+**"low budget***:
+can draw similar conclusions : 
+Standalone vs Franchise Multiplier Comparison:
+Standalone Mean Multiplier: 7.184749352979828
+Franchise Mean Multiplier: 18.433585580084884
+p-value: 3.913436764659772e-09
+
+First Movie in Franchise vs Standalone Movie Multiplier Comparison:
+Average First Movie Multiplier: 37.985207771068005
+Average Standalone Movie Multiplier: 7.184749352979828
+p-value: 3.4897789052655376e-14
+
+Correlation Between Previous Movies' Average Multiplier and Next Movie Multiplier:
+Correlation Coefficient: 0.3043445176797895
+p-value: 2.159668778710247e-03
+
+MAIS ON VOIT QUE Correlation Between Previous Movies' Average Multiplier and Next Movie Multiplier est plus basse que pr high budget:
+hypotheses pr expliquer : y a ptet moins l'effet grosse fanbase qui revient voir la suite pour les petites production
+
+reste  sequel analysis et sentiment analysis sur reviews 

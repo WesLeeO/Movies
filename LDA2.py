@@ -124,19 +124,23 @@ def LDA():
     type_proportions = transformed_df.groupby('id')['dominant_type'].value_counts(normalize=True).unstack(fill_value=0)
     final_df = type_proportions.join(transformed_df[['id', 'ROI']].drop_duplicates().set_index('id'))
 
-    fig, axes = plt.subplots(2, 2, figsize=(20, 3 * 2))
+
+    subset_size = 500
+    random_subset = final_df.sample(n=subset_size, random_state=42)
+
+    fig, axes = plt.subplots(2, 2, figsize=(20, 5 * 2))
 
     axes = axes.flatten()
 
-    for i, review_type in enumerate(final_df.columns[:-1]):  # Exclude ROI column
-        sns.scatterplot(x=final_df['ROI'], y=final_df[review_type], ax=axes[i], color = review_colors[i], label=f"Review Type: {review_labeling[review_type]}")
+    for i, review_type in enumerate(random_subset.columns[:-1]):  # Exclude ROI column
+        sns.scatterplot(x=random_subset['ROI'], y=random_subset[review_type], ax=axes[i], color = review_colors[i], label=f"Review Type: {review_labeling[review_type]}")
         axes[i].set_title(f"{review_labeling[review_type]} - Proportion vs ROI")
         axes[i].set_xlabel('ROI')
         axes[i].set_ylabel(f'Proportion of {review_labeling[review_type]}')
         axes[i].legend()
 
     plt.tight_layout()
-    plt.suptitle("Proportions of Review Types vs ROI", fontsize=16, y=1.03) 
+    plt.suptitle(f"Proportions of Review Types vs ROI on a random subset of size={subset_size}", fontsize=16, y=1.03) 
     plt.show()
 
     

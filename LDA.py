@@ -37,7 +37,7 @@ def LDA():
     processed_summaries = []
     movie_bow = {}
 
-    if os.path.exists("processed_summaries.pkl") and os.path.exists("movie_bow.pkl"):
+    if os.path.exists("processed_summaries.pkl"):
         print("Loading preprocessed summaries and movie BoW from disk...")
         processed_summaries = pd.read_pickle("processed_summaries.pkl")
         movie_bow = pd.read_pickle("movie_bow.pkl")
@@ -73,11 +73,10 @@ def LDA():
         lda_model = LdaModel(corpus, num_topics=num_topics, id2word=dictionary, passes=10, iterations=100, random_state=42)
         lda_model.save(lda_model_path)
     
-   # ROI_per_dominant_topic(lda_model, corpus, df, num_topics)
-   # topic_evolution(lda_model, corpus, df, num_topics)
+    #ROI_per_dominant_topic(lda_model, corpus, df, num_topics)
+    #topic_evolution(lda_model, corpus, df, num_topics)
    # display_topics(lda_model)
    # visualization_of_topics(lda_model, corpus, dictionary)
-   # topic_evolution(lda_model, corpus, df, num_topics)
    # vote_average_per_topic(lda_model, corpus, df, num_topics)
     vote_count_per_topic(lda_model, corpus, df, num_topics)
 

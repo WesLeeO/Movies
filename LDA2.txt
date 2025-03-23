@@ -1,0 +1,3 @@
+- See plot on evolution of proportion of reviews depending on ROI
+- Franchise Movies & Large Audience reaction seems to have higher importance for movies with greatest ROI.
+- For smaller ROI not really clear

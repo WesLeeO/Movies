@@ -117,7 +117,7 @@ df_filtered["category"] = pd.Categorical(df_filtered["category"], categories=["l
 # t_stat, p_value = ttest_ind(low_roi, high_roi, equal_var=False)
 # print(f"T-statistic: {t_stat:.4f}, P-value: {p_value:.4e}")
 """
-# ✅ Optional check: Make sure both groups have enough data
+
 if df_filtered["category"].nunique() < 2:
     print("Not enough data in one of the categories after filtering!")
 else:
@@ -175,11 +175,7 @@ else:
 # print(f"Pearson correlation coefficient: {corr:.4f}")
 # print(f"P-value: {p_value:.4e}")
 
-# # Optional: interpret the result
-# if p_value < 0.05:
-#     print("✅ Significant correlation detected.")
-# else:
-    # print("❌ No significant correlation detected.")
+
 """
 # Plot
 plt.figure(figsize=(10, 6))
@@ -198,8 +194,7 @@ plt.xlabel("Runtime (minutes)")
 plt.ylabel("Multiplier")
 plt.legend(title="Budget Category", loc="upper right")
 
-# Optional: tweak y-axis limits to avoid stacking effect
-# E.g. zoom to 1st–99th percentile
+
 ymin, ymax = np.percentile(df_filtered_scatter["ROI"], [1, 99])
 plt.ylim(ymin, ymax * 1.1)  # Slight padding on top
 
@@ -244,7 +239,7 @@ plt.title("ROI Distribution by Adult Movie Flag and Budget Category (Violin Plot
 plt.xlabel("Adult Movie (False / True)")
 plt.ylabel("ROI (Revenue / Budget)")
 plt.legend(title="Budget Category", loc="upper right")
-plt.ylim(0, None)  # <<< force y-axis to start at 0
+plt.ylim(0, None)  
 plt.tight_layout()
 
 # Save
@@ -256,7 +251,7 @@ plt.show()"""
 """
 final_movies = final_movies[final_movies["genres"].map(lambda x: len(x) > 0)]
 
-# 2. Filter ROI
+
 roi_min, roi_max = np.percentile(final_movies["ROI"], [1, 99])
 print(f"ROI bounds: {roi_min:.2f} to {roi_max:.2f}")
 
@@ -264,17 +259,17 @@ df_filtered_genres = final_movies[
     (final_movies["ROI"] >= roi_min) & (final_movies["ROI"] <= roi_max)
 ].dropna(subset=["ROI", "genres", "category"])  # Make sure category is present
 
-# 3. Explode genres
+
 df_genres = df_filtered_genres.explode("genres")
 df_genres["genres"] = df_genres["genres"].str.strip()
 
 # Remove both "Foreign" and "TV Movie"
 df_genres = df_genres[~df_genres["genres"].isin(["Foreign", "TV Movie"])]
 
-# 4. Group by genre AND budget category
+
 roi_by_genre = df_genres.groupby(["genres", "category"])["ROI"].mean().reset_index()
 
-# 5. Plot
+
 plt.figure(figsize=(14, 7))
 sns.barplot(
     data=roi_by_genre,
@@ -301,14 +296,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-# ------------------------------------------------------------
-# 1.  Explode genres per film
-# ------------------------------------------------------------
 df_gen = final_movies.explode("genres").dropna(subset=["genres", "category"])
 
-# ------------------------------------------------------------
-# 2.  Aggregate counts for each budget group
-# ------------------------------------------------------------
 counts_high = (
     df_gen[df_gen["category"] == "high"]["genres"]
     .value_counts(normalize=True) * 100
@@ -333,23 +322,19 @@ all_labels = sorted(set(counts_high.index).union(counts_low.index))
 palette = sns.color_palette("tab20", n_colors=len(all_labels))
 color_map = {lab: palette[i] for i, lab in enumerate(all_labels)}
 
-# ------------------------------------------------------------
-# 3.  Plot two pie charts side‑by‑side
-# ------------------------------------------------------------
+
 fig, axes = plt.subplots(
     1, 2, figsize=(13, 6), subplot_kw=dict(aspect="equal")
 )
 
-# 1️⃣ Add horizontal space *between* the two pies
+
 fig.subplots_adjust(wspace=0.35)
 
-# 2️⃣ Reserve empty space on the **right‑hand side** of the figure
-#    (everything left of 0.82 is for the plots; 0.82‑1.00 is blank)
+
 fig.subplots_adjust(right=0.82)
 
-# … draw both pies exactly as before …
 
-# 3️⃣ Legend: anchor it in that empty margin
+
 
 
 
@@ -398,10 +383,10 @@ plt.show()
 
 
 """
-# 1. Make sure spoken_languages field is clean
+
 final_movies = final_movies[final_movies["spoken_languages"].map(lambda x: len(x) > 0)]
 
-# 2. Filter ROI
+
 roi_min, roi_max = np.percentile(final_movies["ROI"], [1, 99])
 print(f"ROI bounds: {roi_min:.2f} to {roi_max:.2f}")
 
@@ -409,22 +394,22 @@ df_filtered_lang = final_movies[
     (final_movies["ROI"] >= roi_min) & (final_movies["ROI"] <= roi_max)
 ].dropna(subset=["ROI", "spoken_languages", "category"])  # Ensure category is there
 
-# 3. Explode spoken languages
+
 df_lang = df_filtered_lang.explode("spoken_languages")
 df_lang["spoken_languages"] = df_lang["spoken_languages"].str.strip()
 
-# 4. Keep only top 10 most frequent languages
+
 top_languages = df_lang["spoken_languages"].value_counts().nlargest(10).index
 df_lang = df_lang[df_lang["spoken_languages"].isin(top_languages)]
 
-# 5. Group by spoken language AND budget category
+
 roi_by_language = df_lang.groupby(["spoken_languages", "category"])["ROI"].mean().reset_index()
 roi_by_language.loc[
     (roi_by_language["spoken_languages"] == "ar") & (roi_by_language["category"] == "low"),
     "ROI"
 ] = 4.5
 
-# 6. Plot
+
 plt.figure(figsize=(14, 7))
 
 language_order = ["zh", "en", "hi", "es", "ar", "fr", "ru", "de", "ja", "it"]
@@ -435,7 +420,7 @@ sns.barplot(
     y="ROI",
     hue="category",
     palette={"low": "cornflowerblue", "high": "coral"},
-    order=language_order  # 👈 use population-based order
+    order=language_order  
 )
 
 plt.title("Average Multiplier by Spoken Language")
@@ -449,30 +434,22 @@ plt.tight_layout()
 plt.savefig("plots/ROI_by_SpokenLanguage_Top10.png", dpi=300)
 plt.show()
 """
-# arabic_low_budget = df_lang[
-#     (df_lang["spoken_languages"] == "ar") &
-#     (df_lang["category"] == "low")
-# ]
-
-# # Compute mean budget
-# mean_budget_arabic_low = arabic_low_budget["budget"].mean()
-# print(f"Mean budget of low-budget Arabic movies: {mean_budget_arabic_low:,.0f}")
 
 
 
 """df_filtered_vote = final_movies.dropna(subset=["vote_average", "ROI", "category", "vote_count"])
 df_filtered_vote = df_filtered_vote[df_filtered_vote["vote_count"] > 100]
 
-# 3. Filter ROI (1st–99th percentile)
+
 roi_min, roi_max = np.percentile(df_filtered_vote["ROI"], [1, 99])
 df_filtered_vote = df_filtered_vote[
     (df_filtered_vote["ROI"] >= roi_min) & (df_filtered_vote["ROI"] <= roi_max)
 ].dropna(subset=["vote_average", "ROI", "category"])
 
-# 4. Apply log transform safely
+
 df_filtered_vote["log_ROI"] = np.log1p(df_filtered_vote["ROI"])
 
-# 5. Plot
+
 plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=df_filtered_vote,
@@ -491,7 +468,7 @@ plt.legend(title="Budget Category", loc="upper right")
 
 plt.tight_layout()
 
-# Save the plot
+
 plt.savefig("plots/LogROI_vs_VoteAverage_Above100Votes.png", dpi=300)
 plt.show()"""
 
@@ -500,20 +477,20 @@ plt.show()"""
     lambda x: [str(c).strip() for c in x] if isinstance(x, list) else []
 )
 
-# 3. Drop movies with no production countries
+
 final_movies = final_movies[final_movies["production_countries"].map(lambda x: len(x) > 0)]
 
-# 4. Filter ROI (remove extreme outliers 1st–99th percentile)
+
 roi_min, roi_max = np.percentile(final_movies["ROI"], [1, 99])
 df_filtered_countries = final_movies[
     (final_movies["ROI"] >= roi_min) & (final_movies["ROI"] <= roi_max)
 ].dropna(subset=["ROI", "production_countries", "category"])
 
-# 5. Explode production countries
+
 df_countries = df_filtered_countries.explode("production_countries")
 df_countries["production_countries"] = df_countries["production_countries"].str.strip()
 
-# 6. Map countries into desired groups
+
 europe_countries = {
     'FR', 'DE', 'ES', 'IT', 'GB', 'IE', 'NL', 'SE', 'CH', 'NO', 'BE', 'AT', 'FI', 'DK', 'PT', 'GR', 'PL', 'CZ', 'HU', 'RO'
 }
@@ -534,10 +511,10 @@ def map_country(country_code):
 
 df_countries["country_group"] = df_countries["production_countries"].apply(map_country)
 
-# 7. Group by country group **AND** budget category (low/high)
+
 roi_by_country_group = df_countries.groupby(["country_group", "category"])["ROI"].mean().reset_index()
 
-# 8. Plot
+
 plt.figure(figsize=(12, 7))
 custom_order = ["China", "India", "USA", "Canada", "Europe", "Others"]
 
@@ -556,80 +533,13 @@ plt.ylabel("Average Multiplier")
 plt.legend(title="Budget Category", loc="upper right")
 plt.tight_layout()
 
-# Save
+
 plt.savefig("plots/ROI_by_CountryGroup.png", dpi=300)
 plt.show()"""
 
 
 
-"""
-# read credits.csv
-credits = pd.read_csv('./data/credits.csv')
 
-# Parse the 'cast' field from string to list of dicts
-credits["cast"] = credits["cast"].apply(lambda x: ast.literal_eval(x) if pd.notnull(x) else [])
-
-cast_data = []
-
-for idx, row in credits.iterrows():
-    movie_id = str(row["id"])  # to match final_movies' id type
-    for actor in row["cast"]:
-        if "id" in actor and actor.get("order", 9999) < 100:  # limit to reasonable cast size
-            cast_data.append({
-                "movie_id": movie_id,
-                "actor_id": actor["id"],
-                "actor_name": actor["name"],
-                "gender": actor.get("gender", 0),
-                "order": actor.get("order", 9999)
-            })
-
-cast_df = pd.DataFrame(cast_data)
-
-# Only keep actors for movies in final_movies
-valid_ids = final_movies["id"].astype(str).tolist()
-cast_df = cast_df[cast_df["movie_id"].isin(valid_ids)]
-
-# Group by movie
-def male_ratio(group):
-    total = len(group)
-    males = (group["gender"] == 2).sum()
-    return males / total if total > 0 else None
-
-male_ratios = cast_df.groupby("movie_id").apply(male_ratio).rename("male_ratio").reset_index()
-
-# Merge cast_df with final_movies on movie_id to get vote_average per actor per movie
-merged = cast_df.merge(final_movies[["id", "vote_average"]], left_on="movie_id", right_on="id")
-
-# Compute actor-level average rating
-actor_avg_rating = merged.groupby("actor_id")["vote_average"].mean().rename("actor_avg_vote").reset_index()
-
-
-# Merge actor average vote back to cast_df
-cast_df = cast_df.merge(actor_avg_rating, on="actor_id", how="left")
-
-# Pick top 3 actors by vote in each movie
-top3_votes = (
-    cast_df.sort_values(["movie_id", "actor_avg_vote"], ascending=[True, False])
-    .groupby("movie_id")
-    .head(3)
-)
-
-actor_popularity = top3_votes.groupby("movie_id")["actor_avg_vote"].mean().rename("actor_popularity").reset_index()
-
-
-final_movies["id"] = final_movies["id"].astype(str)
-
-final_movies = final_movies.merge(male_ratios, left_on="id", right_on="movie_id", how="left")
-final_movies = final_movies.merge(actor_popularity, left_on="id", right_on="movie_id", how="left")
-
-# Drop redundant keys
-final_movies.drop(columns=["movie_id_x", "movie_id_y"], inplace=True, errors="ignore")
-
-print(final_movies.info())
-print(final_movies.head())
-
-final_movies.to_pickle("data/final_movies_enriched.pkl")
-"""
 
 """final_movies = pd.read_pickle("data/final_movies_enriched.pkl")
 import nltk
@@ -729,13 +639,13 @@ topic_labeling = {
     7: "Strange Supernatural Mysteries"
 }
 
-# === Add each topic column to final_movies ===
+
 for i in range(W.shape[1]):
     label = topic_labeling.get(i, f"topic_{i}")
     col_name = f"topic_{label.lower()}"
     final_movies[col_name] = W[:, i]
 
-# === Save enriched DataFrame ===
+
 final_movies.to_pickle("data/final_movies_enriched.pkl")"""
 
 
@@ -754,25 +664,19 @@ print(final_movies.head())
 # from scipy.stats import pearsonr
 # import numpy as np
 
-# # Filter out missing values and outliers
+
 # df_plot = final_movies.dropna(subset=["actor_popularity", "ROI"])
 # roi_min, roi_max = np.percentile(df_plot["ROI"], [1, 99])
 # df_plot = df_plot[(df_plot["ROI"] >= roi_min) & (df_plot["ROI"] <= roi_max)]
 
-# # Run Pearson correlation test
+
 # corr, p_value = pearsonr(df_plot["actor_popularity"], df_plot["ROI"])
 
 # # Print results
 # print(f"Pearson correlation coefficient: {corr:.4f}")
 # print(f"P-value: {p_value:.4e}")
 
-# Optional interpretation
-# if p_value < 0.05:
-#     print("✅ Statistically significant correlation detected.")
-# else:
-#     print("❌ No statistically significant correlation.")
 
-# Log transform ROI to reduce skew
 
 """
 # Plot
@@ -798,33 +702,33 @@ plt.savefig("plots/ROI_vs_ActorPopularity.png", dpi=300)
 plt.show()"""
 
 
-# # Filter for valid data
+
 # df_plot = final_movies.dropna(subset=["male_ratio", "ROI", "category"])
 
-# # Remove ROI outliers
+
 # roi_min, roi_max = np.percentile(df_plot["ROI"], [1, 99])
 # df_plot = df_plot[(df_plot["ROI"] >= roi_min) & (df_plot["ROI"] <= roi_max)]
 
 # import numpy as np
 # import statsmodels.api as sm
 
-# # 1. Filter valid data and ROI range
+
 # df_plot = final_movies.dropna(subset=["male_ratio", "ROI"])
 # roi_min, roi_max = np.percentile(df_plot["ROI"], [1, 99])
 # df_plot = df_plot[(df_plot["ROI"] >= roi_min) & (df_plot["ROI"] <= roi_max)]
 
-# # 2. Create features: male_ratio and male_ratio²
+
 # df_plot["male_ratio_sq"] = df_plot["male_ratio"] ** 2
 
-# # 3. Define X and y for regression
+
 # X = df_plot[["male_ratio", "male_ratio_sq"]]
 # X = sm.add_constant(X)  # Adds intercept
 # y = df_plot["ROI"]
 
-# # 4. Fit quadratic regression model
+
 # model = sm.OLS(y, X).fit()
 
-# # 5. Print summary
+
 # print("haaaaaaaaaa")
 # print(model.summary())
 
@@ -861,10 +765,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
 
-# --- 1. Prepare a copy ---
+
 df = final_movies.copy()
 
-# --- 2. Clean genres ---
+
 df_genres = df.explode("genres")
 df_genres = df_genres[df_genres["genres"].notnull()]
 df_genres["genres"] = df_genres["genres"].str.strip()
@@ -873,7 +777,7 @@ genre_dummies = pd.get_dummies(df_genres["genres"])
 genre_dummies["id"] = df_genres["id"]
 genre_features = genre_dummies.groupby("id").max().reset_index()
 
-# --- 3. Group production countries ---
+
 europe_countries = {
     'FR', 'DE', 'ES', 'IT', 'GB', 'IE', 'NL', 'SE', 'CH', 'NO', 'BE', 'AT', 'FI', 'DK', 'PT', 'GR', 'PL', 'CZ', 'HU', 'RO'
 }
@@ -896,7 +800,7 @@ def map_country(countries):
 df["country_group"] = df["production_countries"].apply(map_country)
 country_dummies = pd.get_dummies(df["country_group"], prefix="country")
 
-# --- 4. Spoken languages (Top 5) ---
+
 df_lang = df.explode("spoken_languages")
 df_lang = df_lang[df_lang["spoken_languages"].notnull()]
 df_lang["spoken_languages"] = df_lang["spoken_languages"].str.strip()
@@ -906,7 +810,7 @@ lang_dummies = lang_dummies[top5_languages]
 lang_dummies["id"] = df_lang["id"]
 lang_features = lang_dummies.groupby("id").max().reset_index()
 
-# --- 5. Release quarter ---
+
 def assign_quarter(month):
     if month <= 3:
         return 'Q1'
@@ -920,7 +824,7 @@ def assign_quarter(month):
 df["release_quarter"] = df["release_date"].dt.month.apply(assign_quarter)
 quarter_dummies = pd.get_dummies(df["release_quarter"], prefix="quarter")
 
-# --- 6. Build feature matrix X ---
+
 X = pd.DataFrame()
 X["id"] = df["id"]
 X["runtime"] = df["runtime"]
@@ -951,14 +855,14 @@ X = pd.concat([X.reset_index(drop=True), country_dummies.reset_index(drop=True),
 # Fill missing values
 X = X.fillna(0)
 
-# --- 7. Standardize numerical features ---
+
 scaler = StandardScaler()
 X[["runtime", "actor_popularity", "male_ratio"]] = scaler.fit_transform(X[["runtime", "actor_popularity", "male_ratio"]])
 
-# --- 8. Target ---
+
 y = np.log1p(df["ROI"])
 
-# --- 9. Ridge Regression ---
+
 # ridge = Ridge()
 # ridge.fit(X.drop(columns=["id"]), y)
 # coef = ridge.coef_
@@ -978,7 +882,7 @@ y = np.log1p(df["ROI"])
 # plt.savefig("plots/feature_importance_ridge.png", dpi=300)
 # plt.show()
 
-# --- 10. Random Forest ---
+# Random Forest 
 # rf = RandomForestRegressor(n_estimators=500, random_state=42)
 # rf.fit(X.drop(columns=["id"]), y)
 # importances = rf.feature_importances_
@@ -1002,13 +906,7 @@ y = np.log1p(df["ROI"])
 
 
 
-# =============================================================
-#  STACKING + QUANTILE CALIBRATION – COMPLETE CODE BLOCK
-#  -----------------------------------------------------------
-#  Assumes:
-#     X  ->  DataFrame with features (+ 'id' column)
-#     y  ->  log ROI target  (np.array / Series)
-# =============================================================
+
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -1028,12 +926,12 @@ from xgboost                    import XGBRegressor
 Path("cache").mkdir(exist_ok=True)
 Path("plots").mkdir(exist_ok=True)
 
-# 1. Train / test split
+
 X_train, X_test, y_train, y_test = train_test_split(
     X.drop(columns="id"), y, test_size=0.2, random_state=42
 )
 
-# 2. Define base learners
+
 base_models = [
     ("ridge", Ridge(alpha=1.0, random_state=42)),
     ("rf",    RandomForestRegressor(n_estimators=400, random_state=42, n_jobs=-1)),
@@ -1044,7 +942,7 @@ base_models = [
     ("knn",   KNeighborsRegressor(n_neighbors=10, weights="distance")),
 ]
 
-# 3. StackingRegressor with RidgeCV meta‑learner
+
 stack = StackingRegressor(
     estimators      = base_models,
     final_estimator = RidgeCV(cv=5),
@@ -1052,18 +950,18 @@ stack = StackingRegressor(
     n_jobs          = -1,
 )
 
-# 4. Fit all models
+
 for name, est in base_models:
     est.fit(X_train, y_train)
     print(f"{name} trained.")
 stack.fit(X_train, y_train)
 print("StackingRegressor trained.")
 
-# 5. Predictions
+
 preds = {name: est.predict(X_test) for name, est in base_models}
 preds["Stacking"] = stack.predict(X_test)
 
-# 6. Quantile Gradient‑Boosting for 80 % PI
+# Quantile Gradient‑Boosting for 80 % PI
 q_low, q_high = 0.10, 0.90
 gbr_low  = GradientBoostingRegressor(loss="quantile", alpha=q_low , n_estimators=400, random_state=42)
 gbr_high = GradientBoostingRegressor(loss="quantile", alpha=q_high, n_estimators=400, random_state=42)
@@ -1073,7 +971,7 @@ gbr_high.fit(X_train, y_train)
 pi_low  = gbr_low.predict (X_test)
 pi_high = gbr_high.predict(X_test)
 
-# 7. Metrics helper
+
 def get_metrics(y_true, y_pred):
     return {
         "RMSE": mean_squared_error(y_true, y_pred, squared=False),
@@ -1086,7 +984,7 @@ metrics_df = pd.DataFrame(records).sort_values("RMSE")
 print("\nTest‑set performance:")
 print(metrics_df.to_string(index=False))
 
-# 8. Cache everything
+# Cache everything
 metrics_df.to_csv("cache/metrics_stacking.csv", index=False)
 joblib.dump(
     {
@@ -1100,11 +998,11 @@ joblib.dump(
 joblib.dump(stack, "cache/stack_model.pkl")
 print("Results cached to cache/")
 
-# 9.  Three illustrative plots  (use cached values)
+
 y_true      = y_test.values
 y_pred      = preds["Stacking"]
 
-# (a) Predicted vs Actual with PI
+
 plt.figure(figsize=(6,6))
 sns.scatterplot(x=y_true, y=y_pred, alpha=.4, label="Predictions")
 plt.fill_between(y_true, pi_low, pi_high, color="grey", alpha=.2, label="80% PI")
@@ -1115,7 +1013,7 @@ plt.title("StackingRegressor – Predictions ±80 % interval")
 plt.legend();  plt.tight_layout()
 plt.savefig("plots/stacking_pred_interval.png", dpi=300);  plt.close()
 
-# (b) Residuals
+
 resid = y_true - y_pred
 plt.figure(figsize=(8,5))
 sns.scatterplot(x=y_pred, y=resid, alpha=.4)
@@ -1124,7 +1022,7 @@ plt.xlabel("Predicted log ROI");  plt.ylabel("Residual")
 plt.title("Stacking – Residual plot");  plt.tight_layout()
 plt.savefig("plots/stacking_residuals.png", dpi=300);  plt.close()
 
-# (c) Absolute‑percent‑error ECDF
+
 ape = (np.abs(np.expm1(y_pred)-np.expm1(y_true)) / np.expm1(y_true).clip(min=1e-6))*100
 plt.figure(figsize=(7,5))
 sns.ecdfplot(ape)

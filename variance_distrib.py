@@ -27,27 +27,33 @@ movie_ratings = ratings_df.groupby("movieId").agg(
 df_high_budget = df_high_budget.merge(movie_ratings, left_on="id", right_on="movieId", how="inner")
 df_low_budget = df_low_budget.merge(movie_ratings, left_on="id", right_on="movieId", how="inner")
 
-# Manually tweak data to add a small bump around variance of 2
-np.random.seed(42)  # For reproducibility
-df_high_budget = pd.concat([df_high_budget, pd.DataFrame({"variance_rating": np.random.normal(2, 0.1, 20)})], ignore_index=True)
-df_low_budget = pd.concat([df_low_budget, pd.DataFrame({"variance_rating": np.random.normal(2, 0.1, 20)})], ignore_index=True)
 
 # Plot histograms of rating variance
 plt.figure(figsize=(12, 5))
 
 plt.subplot(1, 2, 1)
-sns.histplot(df_high_budget["variance_rating"], bins=30, kde=True, color='blue', alpha=0.7)
-plt.xlabel("Rating Variance")
-plt.ylabel("Frequency")
-plt.title("Variance of Ratings - High Budget Movies")
+
+sns.histplot(df_low_budget["variance_rating"], bins=30, kde=True, color='blue', alpha=0.7)
+plt.xlabel("Rating Variance" , fontsize=14)
+plt.ylabel("Frequency"  , fontsize=14)
+plt.title("Variance of Ratings - Low Budget Movies" , fontsize=16)
+#xticks in 14
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
 
 plt.subplot(1, 2, 2)
-sns.histplot(df_low_budget["variance_rating"], bins=30, kde=True, color='red', alpha=0.7)
-plt.xlabel("Rating Variance")
-plt.ylabel("Frequency")
-plt.title("Variance of Ratings - Low Budget Movies")
+
+
+sns.histplot(df_high_budget["variance_rating"], bins=30, kde=True, color='orange', alpha=0.7)
+plt.xlabel("Rating Variance", fontsize=14)
+plt.ylabel("Frequency", fontsize=14)
+plt.title("Variance of Ratings - High Budget Movies" , fontsize=16)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
 
 plt.tight_layout()
+
+plt.savefig("part2_plots/variance_distrib.png")
 plt.show()
 
 # Compute correlation between variance and multiplier

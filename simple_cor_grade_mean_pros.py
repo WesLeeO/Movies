@@ -51,12 +51,17 @@ plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=df_combined, x="mean_rating", y="log_multiplier", hue="category", alpha=0.7
 )
-plt.xlabel("Mean Rating")
-plt.ylabel("Log Multiplier")
-plt.title("Log Multiplier by Mean Rating")
 plt.legend(title="Category")
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.legend(fontsize=14)
+plt.title("Log Multiplier by Normalized Mean Ratings of Professional Critics", fontsize=16)
+#also axis title
+plt.xlabel("Mean Rating", fontsize=14)
+plt.ylabel("Log Multiplier", fontsize=14)
+#save the plot in part2pltos folder
+plt.savefig("part2_plots/log_multiplier_mean_rating.png")
 plt.show()
-
 # Compute and print average multiplier for high- and low-budget movies
 high_budget_avg = df_high_budget["multiplier"].mean()
 low_budget_avg = df_low_budget["multiplier"].mean()

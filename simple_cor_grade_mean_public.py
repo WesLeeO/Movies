@@ -13,7 +13,7 @@ df_low_budget = pd.read_csv("archive/low_budget_movies.csv")
 matched_movies = pd.read_csv("archive/matched_movies.csv")
 
 # Load Rotten Tomatoes ratings dataset
-rt_ratings = pd.read_csv("perso/rotten_tomatoes_critic_reviews.csv")  # Adjust with actual file path
+rt_ratings = pd.read_csv("perso/rotten_tomatoes_critic_reviews.csv")  # public (amateur) critics
 
 # Merge movies with Rotten Tomatoes links
 df_high_budget = df_high_budget.merge(matched_movies, left_on="id", right_on="movie_id", how="inner")
@@ -73,10 +73,16 @@ plt.figure(figsize=(10, 6))
 sns.scatterplot(
     data=df_combined, x="mean_rating", y="log_multiplier", hue="category", alpha=0.7
 )
-plt.xlabel("Normalized Mean Rating ")
-plt.ylabel("Log Multiplier")
-plt.title("Log Multiplier by Normalized Mean Rating")
 plt.legend(title="Category")
+#make the writing bigger
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.legend(fontsize=14)
+plt.title("Log Multiplier by Normalized Mean Ratings of Amateur Critics", fontsize=16)
+#also axis title
+plt.xlabel("Mean Rating", fontsize=14)
+plt.ylabel("Log Multiplier", fontsize=14)
+plt.savefig("part2_plots/log_multiplier_mean_rating_amateur.png")
 plt.show()
 
 # Compute and print average multiplier for high- and low-budget movies

@@ -6,7 +6,7 @@ from scipy.stats import ttest_ind, pearsonr
 from ast import literal_eval
 
 # Load filtered movies dataset
-movies_df = pd.read_csv("archive/low_budget_movies.csv", low_memory=False)
+movies_df = pd.read_csv("archive/high_budget_movies.csv", low_memory=False)
 movies_df = movies_df[['id', 'title', 'budget', 'revenue', 'belongs_to_collection', 'release_date']]
 
 # Convert release_date to datetime
@@ -95,15 +95,19 @@ print(f"p-value: {p_value_next}")
 # Plot franchise vs standalone log multiplier distribution
 plt.figure(figsize=(10, 6))
 sns.boxplot(x=movies_df['collection'].notna(), y=movies_df['log_multiplier'])
-plt.xticks([0, 1], ['Standalone', 'Franchise'])
-plt.ylabel("Log Multiplier")
-plt.title("Standalone vs Franchise Movie Log Multipliers")
+plt.xticks([0, 1], ['Standalone', 'Franchise'], fontsize=14)    
+plt.ylabel("Log Multiplier", fontsize=14)
+plt.title("Standalone vs Franchise Movie Log Multipliers (HIGH budget)", fontsize=16)
+plt.savefig("part2_plots/standalone_vs_franchise_log_multipliers_high.png")
 plt.show()
 
 # Plot financial decline in franchises using log multipliers
 plt.figure(figsize=(12, 6))
 sns.histplot(np.log1p(last_movie_df['last_movie_multiplier']) - np.log1p(last_movie_df['avg_earlier_multiplier']), bins=30, kde=True)
-plt.xlabel("Log Last Movie Multiplier - Log Previous Average")
-plt.ylabel("Count")
-plt.title("Financial Performance of Last Movie in Franchise (Log Scale)")
+plt.xlabel("Log (Last Franchise Movie Multiplier/ Previous Franchise Average Multiplier)", fontsize=14)
+plt.ylabel("Count" , fontsize = 14)
+plt.title("Financial Performance of Last Movie in Franchise (HIGH budget)", fontsize=16)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.savefig("part2_plots/financial_decline_franchise_high.png")
 plt.show()
